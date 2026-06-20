@@ -6,24 +6,35 @@ import {
   SortType,
   PublicOpinionEvent,
   RegionRisk,
+  CityRisk,
+  DrillLevel,
 } from '@/types';
-import { mockEvents, regionRisks, brands } from '@/data/mockData';
+import {
+  mockEvents,
+  brands,
+  computeRegionRisks,
+  computeCityRisks,
+  getPendingEvents,
+} from '@/data/mockData';
 
 interface AppState {
   selectedBrand: string;
   dateRange: [Date, Date];
   selectedCategories: EventCategory[];
   selectedProvince: string | null;
+  selectedCity: string | null;
+  drillLevel: DrillLevel;
   selectedEvent: PublicOpinionEvent | null;
   sortType: SortType;
   events: PublicOpinionEvent[];
-  regionRisks: RegionRisk[];
   brands: typeof brands;
 
   setSelectedBrand: (brand: string) => void;
   setDateRange: (range: [Date, Date]) => void;
   toggleCategory: (category: EventCategory) => void;
   setSelectedProvince: (province: string | null) => void;
+  setSelectedCity: (city: string | null) => void;
+  setDrillLevel: (level: DrillLevel) => void;
   setSelectedEvent: (event: PublicOpinionEvent | null) => void;
   setSortType: (sort: SortType) => void;
   updateEventCategory: (eventId: string, category: EventCategory) => void;
@@ -31,9 +42,14 @@ interface AppState {
   updateEventStatus: (eventId: string, status: DisposalStatus) => void;
   confirmEvent: (eventId: string) => void;
 
+  getAllFilteredEvents: () => PublicOpinionEvent[];
   getFilteredEvents: () => PublicOpinionEvent[];
+  getCurrentRegionEvents: () => PublicOpinionEvent[];
   getSortedEvents: () => PublicOpinionEvent[];
   getPendingEvents: () => PublicOpinionEvent[];
+  getComputedRegionRisks: () => RegionRisk[];
+  getComputedCityRisks: (province: string) => CityRisk[];
+  getCurrentDrillTitle: () => string;
 }
 
 const today = new Date();
@@ -44,14 +60,17 @@ export const useAppStore = create<AppState>((set, get) => ({
   dateRange: [thirtyDaysAgo, today],
   selectedCategories: [],
   selectedProvince: null,
+  selectedCity: null,
+  drillLevel: 'province',
   selectedEvent: null,
   sortType: 'spreadSpeed',
   events: mockEvents,
-  regionRisks,
   brands,
 
-  setSelectedBrand: (brand) => set({ selectedBrand: brand }),
-  setDateRange: (range) => set({ dateRange: range }),
+  setSelectedBrand: (brand) =>
+    set({ selectedBrand: brand, selectedProvince: null, selectedCity: null, selectedEvent: null, drillLevel: 'province' }),
+  setDateRange: (range) =>
+    set({ dateRange: range, selectedEvent: null }),
   toggleCategory: (category) =>
     set((state) => {
       const exists = state.selectedCategories.includes(category);
@@ -59,9 +78,19 @@ export const useAppStore = create<AppState>((set, get) => ({
         selectedCategories: exists
           ? state.selectedCategories.filter((c) => c !== category)
           : [...state.selectedCategories, category],
+        selectedEvent: null,
       };
     }),
-  setSelectedProvince: (province) => set({ selectedProvince: province, selectedEvent: null }),
+  setSelectedProvince: (province) =>
+    set({
+      selectedProvince: province,
+      selectedCity: null,
+      drillLevel: province ? 'province' : 'province',
+      selectedEvent: null,
+    }),
+  setSelectedCity: (city) =>
+    set({ selectedCity: city, drillLevel: 'city', selectedEvent: null }),
+  setDrillLevel: (level) => set({ drillLevel: level }),
   setSelectedEvent: (event) => set({ selectedEvent: event }),
   setSortType: (sort) => set({ sortType: sort }),
 
@@ -107,19 +136,11 @@ export const useAppStore = create<AppState>((set, get) => ({
       ),
     })),
 
-  getFilteredEvents: () => {
+  getAllFilteredEvents: () => {
     const state = get();
     let filtered = [...state.events];
 
-    if (state.selectedCategories.length > 0) {
-      filtered = filtered.filter(
-        (e) => e.category && state.selectedCategories.includes(e.category)
-      );
-    }
-
-    if (state.selectedProvince) {
-      filtered = filtered.filter((e) => e.province === state.selectedProvince);
-    }
+    filtered = filtered.filter((e) => e.brandId === state.selectedBrand);
 
     const [startDate, endDate] = state.dateRange;
     filtered = filtered.filter((e) => {
@@ -127,7 +148,30 @@ export const useAppStore = create<AppState>((set, get) => ({
       return eventDate >= startDate && eventDate <= endDate;
     });
 
+    if (state.selectedCategories.length > 0) {
+      filtered = filtered.filter(
+        (e) => e.category && state.selectedCategories.includes(e.category)
+      );
+    }
+
     return filtered;
+  },
+
+  getFilteredEvents: () => {
+    return get().getAllFilteredEvents();
+  },
+
+  getCurrentRegionEvents: () => {
+    const state = get();
+    const allFiltered = state.getAllFilteredEvents();
+
+    if (state.drillLevel === 'city' && state.selectedCity) {
+      return allFiltered.filter((e) => e.city === state.selectedCity);
+    }
+    if (state.selectedProvince) {
+      return allFiltered.filter((e) => e.province === state.selectedProvince);
+    }
+    return allFiltered;
   },
 
   getSortedEvents: () => {
@@ -153,11 +197,28 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
 
   getPendingEvents: () => {
+    const all = get().getAllFilteredEvents();
+    return getPendingEvents(all);
+  },
+
+  getComputedRegionRisks: () => {
+    const events = get().getAllFilteredEvents();
+    return computeRegionRisks(events);
+  },
+
+  getComputedCityRisks: (province: string) => {
+    const events = get().getAllFilteredEvents();
+    return computeCityRisks(events, province);
+  },
+
+  getCurrentDrillTitle: () => {
     const state = get();
-    return state.events.filter(
-      (e) =>
-        e.status === DisposalStatus.PENDING ||
-        e.status === DisposalStatus.CONFIRMED
-    );
+    if (state.drillLevel === 'city' && state.selectedCity) {
+      return state.selectedCity;
+    }
+    if (state.selectedProvince) {
+      return state.selectedProvince;
+    }
+    return '';
   },
 }));

@@ -9,6 +9,7 @@ import {
   HotWord,
   StrategySuggestion,
   Brand,
+  CityRisk,
 } from '@/types';
 
 export const brands: Brand[] = [
@@ -18,7 +19,7 @@ export const brands: Brand[] = [
   { id: 'brand4', name: '新业务线' },
 ];
 
-const provinces = [
+export const provinces = [
   '北京', '天津', '河北', '山西', '内蒙古',
   '辽宁', '吉林', '黑龙江',
   '上海', '江苏', '浙江', '安徽', '福建', '江西', '山东',
@@ -28,41 +29,139 @@ const provinces = [
   '台湾', '香港', '澳门',
 ];
 
-const cities: Record<string, string[]> = {
-  '北京': ['北京市'],
-  '天津': ['天津市'],
-  '河北': ['石家庄', '唐山', '保定', '廊坊'],
-  '山西': ['太原', '大同', '临汾'],
-  '内蒙古': ['呼和浩特', '包头', '鄂尔多斯'],
-  '辽宁': ['沈阳', '大连', '鞍山'],
-  '吉林': ['长春', '吉林', '延边'],
-  '黑龙江': ['哈尔滨', '大庆', '齐齐哈尔'],
-  '上海': ['上海市'],
-  '江苏': ['南京', '苏州', '无锡', '常州', '南通'],
-  '浙江': ['杭州', '宁波', '温州', '金华', '嘉兴'],
-  '安徽': ['合肥', '芜湖', '蚌埠'],
-  '福建': ['福州', '厦门', '泉州'],
-  '江西': ['南昌', '九江', '赣州'],
-  '山东': ['济南', '青岛', '烟台', '潍坊', '临沂'],
-  '河南': ['郑州', '洛阳', '开封', '新乡'],
-  '湖北': ['武汉', '宜昌', '襄阳'],
-  '湖南': ['长沙', '株洲', '湘潭', '衡阳'],
-  '广东': ['广州', '深圳', '东莞', '佛山', '珠海'],
-  '广西': ['南宁', '柳州', '桂林'],
-  '海南': ['海口', '三亚'],
-  '重庆': ['重庆市'],
-  '四川': ['成都', '绵阳', '德阳', '宜宾'],
-  '贵州': ['贵阳', '遵义', '六盘水'],
-  '云南': ['昆明', '大理', '丽江'],
-  '西藏': ['拉萨', '日喀则'],
-  '陕西': ['西安', '咸阳', '宝鸡'],
-  '甘肃': ['兰州', '天水', '酒泉'],
-  '青海': ['西宁', '格尔木'],
-  '宁夏': ['银川', '石嘴山'],
-  '新疆': ['乌鲁木齐', '伊犁', '喀什'],
-  '台湾': ['台北', '高雄'],
-  '香港': ['香港'],
-  '澳门': ['澳门'],
+export const provincePositions: Record<string, { x: number; y: number }> = {
+  '北京': { x: 72, y: 22 }, '天津': { x: 75, y: 25 }, '河北': { x: 70, y: 28 },
+  '山西': { x: 63, y: 30 }, '内蒙古': { x: 65, y: 15 }, '辽宁': { x: 80, y: 18 },
+  '吉林': { x: 85, y: 12 }, '黑龙江': { x: 88, y: 8 }, '上海': { x: 78, y: 45 },
+  '江苏': { x: 73, y: 42 }, '浙江': { x: 72, y: 50 }, '安徽': { x: 65, y: 45 },
+  '福建': { x: 70, y: 58 }, '江西': { x: 60, y: 55 }, '山东': { x: 70, y: 35 },
+  '河南': { x: 58, y: 38 }, '湖北': { x: 53, y: 45 }, '湖南': { x: 50, y: 55 },
+  '广东': { x: 55, y: 68 }, '广西': { x: 42, y: 65 }, '海南': { x: 48, y: 78 },
+  '重庆': { x: 40, y: 48 }, '四川': { x: 30, y: 42 }, '贵州': { x: 38, y: 58 },
+  '云南': { x: 25, y: 58 }, '西藏': { x: 12, y: 45 }, '陕西': { x: 48, y: 35 },
+  '甘肃': { x: 32, y: 28 }, '青海': { x: 20, y: 32 }, '宁夏': { x: 40, y: 28 },
+  '新疆': { x: 10, y: 20 }, '台湾': { x: 78, y: 65 }, '香港': { x: 62, y: 72 },
+  '澳门': { x: 58, y: 72 },
+};
+
+export const cities: Record<string, { name: string; x: number; y: number }[]> = {
+  '北京': [{ name: '北京市', x: 72, y: 22 }],
+  '天津': [{ name: '天津市', x: 75, y: 25 }],
+  '河北': [
+    { name: '石家庄', x: 68, y: 30 }, { name: '唐山', x: 76, y: 27 },
+    { name: '保定', x: 70, y: 26 }, { name: '廊坊', x: 74, y: 23 },
+  ],
+  '山西': [
+    { name: '太原', x: 62, y: 30 }, { name: '大同', x: 66, y: 24 },
+    { name: '临汾', x: 60, y: 36 },
+  ],
+  '内蒙古': [
+    { name: '呼和浩特', x: 60, y: 18 }, { name: '包头', x: 56, y: 17 },
+    { name: '鄂尔多斯', x: 52, y: 22 },
+  ],
+  '辽宁': [
+    { name: '沈阳', x: 78, y: 17 }, { name: '大连', x: 82, y: 24 },
+    { name: '鞍山', x: 80, y: 20 },
+  ],
+  '吉林': [
+    { name: '长春', x: 84, y: 13 }, { name: '吉林', x: 86, y: 15 },
+    { name: '延边', x: 90, y: 13 },
+  ],
+  '黑龙江': [
+    { name: '哈尔滨', x: 87, y: 8 }, { name: '大庆', x: 84, y: 7 },
+    { name: '齐齐哈尔', x: 82, y: 6 },
+  ],
+  '上海': [{ name: '上海市', x: 78, y: 45 }],
+  '江苏': [
+    { name: '南京', x: 70, y: 42 }, { name: '苏州', x: 74, y: 44 },
+    { name: '无锡', x: 72, y: 43 }, { name: '常州', x: 71, y: 42 },
+    { name: '南通', x: 75, y: 42 },
+  ],
+  '浙江': [
+    { name: '杭州', x: 71, y: 49 }, { name: '宁波', x: 75, y: 50 },
+    { name: '温州', x: 70, y: 56 }, { name: '金华', x: 69, y: 53 },
+    { name: '嘉兴', x: 73, y: 47 },
+  ],
+  '安徽': [
+    { name: '合肥', x: 64, y: 45 }, { name: '芜湖', x: 66, y: 47 },
+    { name: '蚌埠', x: 65, y: 42 },
+  ],
+  '福建': [
+    { name: '福州', x: 69, y: 56 }, { name: '厦门', x: 68, y: 60 },
+    { name: '泉州', x: 69, y: 58 },
+  ],
+  '江西': [
+    { name: '南昌', x: 60, y: 53 }, { name: '九江', x: 61, y: 50 },
+    { name: '赣州', x: 58, y: 60 },
+  ],
+  '山东': [
+    { name: '济南', x: 68, y: 33 }, { name: '青岛', x: 74, y: 33 },
+    { name: '烟台', x: 76, y: 30 }, { name: '潍坊', x: 71, y: 33 },
+    { name: '临沂', x: 70, y: 37 },
+  ],
+  '河南': [
+    { name: '郑州', x: 56, y: 37 }, { name: '洛阳', x: 52, y: 37 },
+    { name: '开封', x: 58, y: 37 }, { name: '新乡', x: 56, y: 35 },
+  ],
+  '湖北': [
+    { name: '武汉', x: 52, y: 44 }, { name: '宜昌', x: 46, y: 45 },
+    { name: '襄阳', x: 50, y: 40 },
+  ],
+  '湖南': [
+    { name: '长沙', x: 50, y: 53 }, { name: '株洲', x: 51, y: 55 },
+    { name: '湘潭', x: 49, y: 55 }, { name: '衡阳', x: 50, y: 60 },
+  ],
+  '广东': [
+    { name: '广州', x: 54, y: 65 }, { name: '深圳', x: 58, y: 70 },
+    { name: '东莞', x: 56, y: 67 }, { name: '佛山', x: 52, y: 66 },
+    { name: '珠海', x: 53, y: 70 },
+  ],
+  '广西': [
+    { name: '南宁', x: 42, y: 65 }, { name: '柳州', x: 42, y: 61 },
+    { name: '桂林', x: 46, y: 60 },
+  ],
+  '海南': [
+    { name: '海口', x: 47, y: 76 }, { name: '三亚', x: 50, y: 82 },
+  ],
+  '重庆': [{ name: '重庆市', x: 40, y: 48 }],
+  '四川': [
+    { name: '成都', x: 28, y: 42 }, { name: '绵阳', x: 28, y: 38 },
+    { name: '德阳', x: 28, y: 40 }, { name: '宜宾', x: 32, y: 48 },
+  ],
+  '贵州': [
+    { name: '贵阳', x: 38, y: 56 }, { name: '遵义', x: 37, y: 52 },
+    { name: '六盘水', x: 35, y: 60 },
+  ],
+  '云南': [
+    { name: '昆明', x: 24, y: 58 }, { name: '大理', x: 20, y: 58 },
+    { name: '丽江', x: 21, y: 54 },
+  ],
+  '西藏': [
+    { name: '拉萨', x: 10, y: 46 }, { name: '日喀则', x: 8, y: 50 },
+  ],
+  '陕西': [
+    { name: '西安', x: 47, y: 35 }, { name: '咸阳', x: 46, y: 35 },
+    { name: '宝鸡', x: 42, y: 35 },
+  ],
+  '甘肃': [
+    { name: '兰州', x: 32, y: 28 }, { name: '天水', x: 36, y: 32 },
+    { name: '酒泉', x: 24, y: 25 },
+  ],
+  '青海': [
+    { name: '西宁', x: 20, y: 32 }, { name: '格尔木', x: 15, y: 32 },
+  ],
+  '宁夏': [
+    { name: '银川', x: 40, y: 27 }, { name: '石嘴山', x: 40, y: 25 },
+  ],
+  '新疆': [
+    { name: '乌鲁木齐', x: 8, y: 20 }, { name: '伊犁', x: 4, y: 22 },
+    { name: '喀什', x: 6, y: 30 },
+  ],
+  '台湾': [
+    { name: '台北', x: 78, y: 63 }, { name: '高雄', x: 77, y: 68 },
+  ],
+  '香港': [{ name: '香港', x: 62, y: 72 }],
+  '澳门': [{ name: '澳门', x: 58, y: 72 }],
 };
 
 function getRiskLevel(score: number): RiskLevel {
@@ -80,18 +179,7 @@ function randomChoice<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-export const regionRisks: RegionRisk[] = provinces.map((name, index) => {
-  const score = randomInt(15, 95);
-  const eventCount = randomInt(1, 15);
-  return {
-    regionCode: `prov_${index + 1}`,
-    regionName: name,
-    riskLevel: getRiskLevel(score),
-    riskScore: score,
-    eventCount,
-    highRiskCount: Math.min(eventCount, randomInt(0, Math.ceil(eventCount / 2))),
-  };
-});
+export const provinceNamesList = provinces;
 
 const eventTitles = [
   '产品质量问题引发消费者集体投诉',
@@ -118,7 +206,7 @@ const eventTitles = [
 
 const platforms = ['微博', '抖音', '小红书', '微信公众号', 'B站', '知乎', '今日头条', '百度贴吧'];
 
-const topics = [
+export const topicsList = [
   '质量问题', '售后服务', '价格争议', '虚假宣传', '安全隐患',
   '劳动纠纷', '监管处罚', '隐私泄露', '物流问题', '退款困难',
   '服务态度', '产品缺陷', '环保问题', '供应链', '品牌形象',
@@ -137,6 +225,19 @@ const contents = [
 
 const assignees = ['张明', '李娜', '王芳', '刘伟', '陈静', '赵强', '孙丽', '周军'];
 
+const brandIds = ['brand1', 'brand2', 'brand3', 'brand4'];
+const brandWeights = [0.45, 0.25, 0.18, 0.12];
+
+function weightedBrandChoice(): string {
+  const r = Math.random();
+  let cumulative = 0;
+  for (let i = 0; i < brandIds.length; i++) {
+    cumulative += brandWeights[i];
+    if (r < cumulative) return brandIds[i];
+  }
+  return brandIds[0];
+}
+
 function generateEvents(): PublicOpinionEvent[] {
   const events: PublicOpinionEvent[] = [];
   const statuses = [DisposalStatus.PENDING, DisposalStatus.CONFIRMED, DisposalStatus.PROCESSING, DisposalStatus.COOLED, DisposalStatus.RESOLVED];
@@ -146,11 +247,12 @@ function generateEvents(): PublicOpinionEvent[] {
 
   const highRiskProvinces = ['广东', '浙江', '江苏', '北京', '上海', '四川', '山东', '湖北'];
 
-  for (let i = 0; i < 60; i++) {
-    const isHighRiskArea = Math.random() > 0.5;
+  for (let i = 0; i < 80; i++) {
+    const isHighRiskArea = Math.random() > 0.45;
     const province = isHighRiskArea ? randomChoice(highRiskProvinces) : randomChoice(provinces);
-    const cityList = cities[province] || [province];
-    const city = randomChoice(cityList);
+    const cityList = cities[province] || [{ name: province, x: 50, y: 50 }];
+    const cityObj = randomChoice(cityList);
+    const city = cityObj.name;
     const spreadSpeed = randomInt(10, 95);
     const riskScore = randomInt(isHighRiskArea ? 50 : 20, 95);
 
@@ -160,7 +262,7 @@ function generateEvents(): PublicOpinionEvent[] {
     publishDate.setDate(publishDate.getDate() - daysAgo);
     publishDate.setHours(publishDate.getHours() - hoursAgo);
 
-    const status = i < 20 ? DisposalStatus.PENDING : randomChoice(statuses);
+    const status = i < 28 ? DisposalStatus.PENDING : randomChoice(statuses);
     const hasCategory = status !== DisposalStatus.PENDING;
     const hasAssignee = status !== DisposalStatus.PENDING;
 
@@ -169,6 +271,7 @@ function generateEvents(): PublicOpinionEvent[] {
       title: randomChoice(eventTitles),
       city,
       province,
+      brandId: weightedBrandChoice(),
       riskLevel: getRiskLevel(riskScore),
       category: hasCategory ? randomChoice(categories) : undefined,
       sentiment: randomChoice(sentiments),
@@ -178,7 +281,7 @@ function generateEvents(): PublicOpinionEvent[] {
       spreadSpeed,
       localMediaInvolvement: randomInt(5, 90),
       mediaTier: randomChoice(mediaTiers),
-      mainTopics: Array.from({ length: randomInt(2, 5) }, () => randomChoice(topics)).filter((v, i, a) => a.indexOf(v) === i),
+      mainTopics: Array.from({ length: randomInt(2, 5) }, () => randomChoice(topicsList)).filter((v, i, a) => a.indexOf(v) === i),
       typicalContent: randomChoice(contents),
       status,
       assignee: hasAssignee ? randomChoice(assignees) : undefined,
@@ -192,29 +295,6 @@ function generateEvents(): PublicOpinionEvent[] {
 }
 
 export const mockEvents: PublicOpinionEvent[] = generateEvents();
-
-export const hotWords: HotWord[] = [
-  { word: '质量问题', count: 128, trend: 'up' },
-  { word: '售后服务', count: 96, trend: 'up' },
-  { word: '退款难', count: 87, trend: 'stable' },
-  { word: '虚假宣传', count: 75, trend: 'up' },
-  { word: '强制加班', count: 68, trend: 'down' },
-  { word: '价格欺诈', count: 62, trend: 'up' },
-  { word: '安全隐患', count: 58, trend: 'stable' },
-  { word: '物流延迟', count: 54, trend: 'down' },
-  { word: '服务态度', count: 49, trend: 'up' },
-  { word: '隐私泄露', count: 45, trend: 'up' },
-  { word: '产品缺陷', count: 42, trend: 'stable' },
-  { word: '监管处罚', count: 38, trend: 'down' },
-  { word: '环保问题', count: 35, trend: 'stable' },
-  { word: '缺货', count: 32, trend: 'up' },
-  { word: '劳动纠纷', count: 30, trend: 'down' },
-  { word: '门店关闭', count: 28, trend: 'up' },
-  { word: '品牌形象', count: 25, trend: 'stable' },
-  { word: '客服敷衍', count: 23, trend: 'up' },
-  { word: '数据安全', count: 21, trend: 'up' },
-  { word: '供应链', count: 19, trend: 'down' },
-];
 
 export const strategySuggestions: StrategySuggestion[] = [
   {
@@ -264,22 +344,152 @@ export const strategySuggestions: StrategySuggestion[] = [
   },
 ];
 
-export function getEventsByProvince(provinceName: string): PublicOpinionEvent[] {
-  return mockEvents.filter(e => e.province === provinceName);
+function riskScoreToLevel(score: number): RiskLevel {
+  if (score >= 80) return RiskLevel.CRITICAL;
+  if (score >= 60) return RiskLevel.HIGH;
+  if (score >= 40) return RiskLevel.MEDIUM;
+  return RiskLevel.LOW;
 }
 
-export function getEventsByCity(cityName: string): PublicOpinionEvent[] {
-  return mockEvents.filter(e => e.city === cityName);
+export function computeRegionRisks(events: PublicOpinionEvent[]): RegionRisk[] {
+  const provinceMap = new Map<string, { scores: number[]; highCount: number; total: number }>();
+
+  for (const p of provinces) {
+    provinceMap.set(p, { scores: [], highCount: 0, total: 0 });
+  }
+
+  for (const ev of events) {
+    const data = provinceMap.get(ev.province);
+    if (!data) continue;
+    const scoreMap: Record<string, number> = { critical: 90, high: 72, medium: 48, low: 24 };
+    const baseScore = scoreMap[ev.riskLevel] ?? 20;
+    const compositeScore = Math.min(100, Math.round(baseScore * 0.6 + ev.spreadSpeed * 0.25 + ev.localMediaInvolvement * 0.15));
+    data.scores.push(compositeScore);
+    data.total += 1;
+    if (ev.riskLevel === RiskLevel.HIGH || ev.riskLevel === RiskLevel.CRITICAL) {
+      data.highCount += 1;
+    }
+  }
+
+  const result: RegionRisk[] = [];
+  provinces.forEach((name, idx) => {
+    const data = provinceMap.get(name)!;
+    const hasEvents = data.scores.length > 0;
+    const avgScore = hasEvents
+      ? Math.round(data.scores.reduce((a, b) => a + b, 0) / data.scores.length)
+      : 0;
+    const maxScore = hasEvents ? Math.max(...data.scores) : 0;
+    const finalScore = hasEvents ? Math.round(avgScore * 0.55 + maxScore * 0.45) : 0;
+
+    result.push({
+      regionCode: `prov_${idx + 1}`,
+      regionName: name,
+      riskLevel: hasEvents ? riskScoreToLevel(finalScore) : RiskLevel.LOW,
+      riskScore: finalScore,
+      eventCount: data.total,
+      highRiskCount: data.highCount,
+    });
+  });
+
+  return result;
 }
 
-export function getHighRiskRegions(limit = 10): RegionRisk[] {
-  return [...regionRisks].sort((a, b) => b.riskScore - a.riskScore).slice(0, limit);
+export function computeCityRisks(events: PublicOpinionEvent[], provinceName: string): CityRisk[] {
+  const cityObjs = cities[provinceName] || [];
+  const cityMap = new Map<string, { scores: number[]; highCount: number; total: number }>();
+
+  for (const c of cityObjs) {
+    cityMap.set(c.name, { scores: [], highCount: 0, total: 0 });
+  }
+
+  for (const ev of events) {
+    if (ev.province !== provinceName) continue;
+    const data = cityMap.get(ev.city);
+    if (!data) continue;
+    const scoreMap: Record<string, number> = { critical: 90, high: 72, medium: 48, low: 24 };
+    const baseScore = scoreMap[ev.riskLevel] ?? 20;
+    const compositeScore = Math.min(100, Math.round(baseScore * 0.6 + ev.spreadSpeed * 0.25 + ev.localMediaInvolvement * 0.15));
+    data.scores.push(compositeScore);
+    data.total += 1;
+    if (ev.riskLevel === RiskLevel.HIGH || ev.riskLevel === RiskLevel.CRITICAL) {
+      data.highCount += 1;
+    }
+  }
+
+  const result: CityRisk[] = [];
+  for (const c of cityObjs) {
+    const data = cityMap.get(c.name)!;
+    const hasEvents = data.scores.length > 0;
+    const avgScore = hasEvents
+      ? Math.round(data.scores.reduce((a, b) => a + b, 0) / data.scores.length)
+      : 0;
+    const maxScore = hasEvents ? Math.max(...data.scores) : 0;
+    const finalScore = hasEvents ? Math.round(avgScore * 0.55 + maxScore * 0.45) : 0;
+
+    result.push({
+      cityName: c.name,
+      provinceName,
+      x: c.x,
+      y: c.y,
+      riskScore: finalScore,
+      riskLevel: hasEvents ? riskScoreToLevel(finalScore) : RiskLevel.LOW,
+      eventCount: data.total,
+      highRiskCount: data.highCount,
+    });
+  }
+
+  return result;
 }
 
-export function getCooledEvents(): PublicOpinionEvent[] {
-  return mockEvents.filter(e => e.status === DisposalStatus.COOLED || e.status === DisposalStatus.RESOLVED);
+export function computeHotWords(events: PublicOpinionEvent[]): HotWord[] {
+  const wordCount = new Map<string, number>();
+
+  for (const ev of events) {
+    for (const topic of ev.mainTopics) {
+      wordCount.set(topic, (wordCount.get(topic) || 0) + 1);
+    }
+  }
+
+  const sortedWords = Array.from(wordCount.entries())
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 20);
+
+  const maxCount = sortedWords.length > 0 ? sortedWords[0][1] : 1;
+
+  return sortedWords.map(([word, count]) => {
+    const ratio = count / maxCount;
+    let trend: 'up' | 'down' | 'stable' = 'stable';
+    if (ratio > 0.7) trend = 'up';
+    else if (ratio < 0.3) trend = 'down';
+    return { word, count, trend };
+  });
 }
 
-export function getPendingEvents(): PublicOpinionEvent[] {
-  return mockEvents.filter(e => e.status === DisposalStatus.PENDING || e.status === DisposalStatus.CONFIRMED);
+export function getThisWeekRange(): [Date, Date] {
+  const now = new Date();
+  const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  return [sevenDaysAgo, now];
+}
+
+export function filterEventsByDateRange(
+  events: PublicOpinionEvent[],
+  start: Date,
+  end: Date
+): PublicOpinionEvent[] {
+  return events.filter((e) => {
+    const d = new Date(e.firstPublishTime);
+    return d >= start && d <= end;
+  });
+}
+
+export function getCooledEvents(events: PublicOpinionEvent[]): PublicOpinionEvent[] {
+  return events.filter(
+    (e) => e.status === DisposalStatus.COOLED || e.status === DisposalStatus.RESOLVED
+  );
+}
+
+export function getPendingEvents(events: PublicOpinionEvent[]): PublicOpinionEvent[] {
+  return events.filter(
+    (e) => e.status === DisposalStatus.PENDING || e.status === DisposalStatus.CONFIRMED
+  );
 }

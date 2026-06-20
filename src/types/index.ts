@@ -48,6 +48,7 @@ export interface PublicOpinionEvent {
   title: string;
   city: string;
   province: string;
+  brandId: string;
   riskLevel: RiskLevel;
   category?: EventCategory;
   sentiment: Sentiment;
@@ -88,3 +89,16 @@ export interface Brand {
 }
 
 export type SortType = 'spreadSpeed' | 'sentiment' | 'localMedia';
+
+export type DrillLevel = 'province' | 'city';
+
+export interface CityRisk {
+  cityName: string;
+  provinceName: string;
+  x: number;
+  y: number;
+  riskScore: number;
+  riskLevel: RiskLevel;
+  eventCount: number;
+  highRiskCount: number;
+}
