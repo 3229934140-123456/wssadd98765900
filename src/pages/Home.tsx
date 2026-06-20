@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from 'react';
+import { useCallback } from 'react';
 import { FilterBar } from '@/components/FilterBar';
 import { ChinaHeatMap } from '@/components/ChinaHeatMap';
 import { RiskDetailPanel } from '@/components/RiskDetailPanel';
@@ -19,15 +19,15 @@ function HomePage() {
     getComputedCityRisks,
     brands,
     selectedBrand,
+    selectedCategories,
+    dateRange,
+    events,
   } = useAppStore();
 
-  const filteredEvents = useMemo(() => getAllFilteredEvents(), [getAllFilteredEvents]);
-  const regionEvents = useMemo(() => getCurrentRegionEvents(), [getCurrentRegionEvents]);
-  const provinceRisks = useMemo(() => getComputedRegionRisks(), [getComputedRegionRisks]);
-  const cityRisks = useMemo(
-    () => (selectedProvince ? getComputedCityRisks(selectedProvince) : []),
-    [selectedProvince, getComputedCityRisks]
-  );
+  const filteredEvents = getAllFilteredEvents();
+  const regionEvents = getCurrentRegionEvents();
+  const provinceRisks = getComputedRegionRisks();
+  const cityRisks = selectedProvince ? getComputedCityRisks(selectedProvince) : [];
 
   const totalEvents = filteredEvents.length;
   const highRiskCount = filteredEvents.filter(

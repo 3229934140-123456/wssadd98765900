@@ -60,8 +60,8 @@ export function RiskDetailPanel({
   const [showAssigneeMenu, setShowAssigneeMenu] = useState(false);
   const [showStatusMenu, setShowStatusMenu] = useState(false);
 
-  const title = drillLevel === 'city' ? city : province;
-  const isProvinceLevel = drillLevel === 'province' && province && !selectedEvent;
+  const title = city ? city : (province || '全国');
+  const isProvinceLevel = !!province && !city;
 
   const handleBackToProvince = () => {
     setSelectedCity(null);
@@ -72,7 +72,7 @@ export function RiskDetailPanel({
     setSelectedEvent(null);
   };
 
-  const handleProvinceClear = () => {
+  const handleBackToCountry = () => {
     setSelectedProvince(null);
     setSelectedCity(null);
     setSelectedEvent(null);
@@ -97,16 +97,6 @@ export function RiskDetailPanel({
     setShowStatusMenu(false);
   };
 
-  if (!province && !city) {
-    return (
-      <div className="h-full flex flex-col items-center justify-center text-slate-500">
-        <MapPin className="w-16 h-16 mb-4 opacity-30" />
-        <p className="text-lg font-medium">点击地图查看区域详情</p>
-        <p className="text-sm mt-2">选择省份查看当地舆情风险</p>
-      </div>
-    );
-  }
-
   const renderEventDetail = () => {
     if (!selectedEvent) return null;
     const e = selectedEvent;
@@ -115,11 +105,11 @@ export function RiskDetailPanel({
       <div className="space-y-4 animate-in slide-in-from-right-4 duration-300">
         <div className="flex items-center gap-2 -mx-1">
           <button
-            onClick={drillLevel === 'city' ? handleBackToCities : handleBackToCities}
+            onClick={handleBackToCities}
             className="flex items-center gap-1 px-2 py-1 text-xs text-slate-400 hover:text-white hover:bg-slate-700/50 rounded transition-colors"
           >
             <ChevronLeft className="w-4 h-4" />
-            返回{drillLevel === 'city' ? city : province}事件列表
+            返回{city ? city : province}事件列表
           </button>
         </div>
 
@@ -321,8 +311,6 @@ export function RiskDetailPanel({
   };
 
   const renderEventList = () => {
-    if (selectedEvent) return null;
-
     return (
       <div className="space-y-3">
         <div className="flex items-center justify-between">
@@ -378,15 +366,13 @@ export function RiskDetailPanel({
     return (
       <div className="space-y-3">
         <div className="flex items-center gap-2 -mx-1 mb-2">
-          {drillLevel === 'city' && (
-            <button
-              onClick={handleBackToProvince}
-              className="flex items-center gap-1 px-2 py-1 text-xs text-slate-400 hover:text-white hover:bg-slate-700/50 rounded transition-colors"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              返回省份视图
-            </button>
-          )}
+          <button
+            onClick={handleBackToCountry}
+            className="flex items-center gap-1 px-2 py-1 text-xs text-slate-400 hover:text-white hover:bg-slate-700/50 rounded transition-colors"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            返回全国
+          </button>
         </div>
 
         <div className="flex items-center justify-between">
@@ -394,12 +380,6 @@ export function RiskDetailPanel({
             <Building2 className="w-4 h-4 text-blue-400" />
             {province} · 城市列表
           </h3>
-          <button
-            onClick={handleProvinceClear}
-            className="text-xs text-slate-400 hover:text-white transition-colors"
-          >
-            清空选择
-          </button>
         </div>
 
         <div className="space-y-2">
@@ -465,12 +445,9 @@ export function RiskDetailPanel({
         </div>
 
         <div className="pt-3 mt-3 border-t border-slate-700/40">
-          <button
-            onClick={() => setSelectedCity(null)}
-            className="w-full text-xs text-slate-400 hover:text-white p-2 rounded hover:bg-slate-800/60 transition-colors"
-          >
-            查看全省事件（{events.length} 起）
-          </button>
+          <div className="text-xs text-slate-400 text-center">
+            {events.length} 起全省事件已在下方展示
+          </div>
         </div>
       </div>
     );
@@ -484,18 +461,18 @@ export function RiskDetailPanel({
         <div className="flex items-center gap-2">
           <MapPin className="w-5 h-5 text-blue-400" />
           <h2 className="text-lg font-bold text-white">
-            {title || '请选择区域'}
+            {title}
           </h2>
-          {drillLevel === 'city' && (
+          {city && province && (
             <span className="text-xs text-slate-500">· {province}</span>
           )}
         </div>
-        {title && !selectedEvent && (
+        {province && (
           <button
-            onClick={handleProvinceClear}
+            onClick={handleBackToCountry}
             className="text-xs text-slate-400 hover:text-white transition-colors"
           >
-            清空
+            返回全国
           </button>
         )}
       </div>
@@ -509,7 +486,7 @@ export function RiskDetailPanel({
       <div className="flex-1 overflow-y-auto pr-1">
         {selectedEvent ? (
           renderEventDetail()
-        ) : drillLevel === 'province' && province && cityRisks.length > 0 ? (
+        ) : isProvinceLevel && cityRisks.length > 0 ? (
           <div className="space-y-6">
             {renderCityList()}
             {events.length > 0 && (
@@ -517,6 +494,19 @@ export function RiskDetailPanel({
                 {renderEventList()}
               </div>
             )}
+          </div>
+        ) : city ? (
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 -mx-1 mb-2">
+              <button
+                onClick={handleBackToProvince}
+                className="flex items-center gap-1 px-2 py-1 text-xs text-slate-400 hover:text-white hover:bg-slate-700/50 rounded transition-colors"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                返回{province}城市列表
+              </button>
+            </div>
+            {renderEventList()}
           </div>
         ) : (
           renderEventList()

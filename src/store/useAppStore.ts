@@ -53,7 +53,9 @@ interface AppState {
 }
 
 const today = new Date();
+today.setHours(23, 59, 59, 999);
 const thirtyDaysAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+thirtyDaysAgo.setHours(0, 0, 0, 0);
 
 export const useAppStore = create<AppState>((set, get) => ({
   selectedBrand: 'brand1',
@@ -89,7 +91,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       selectedEvent: null,
     }),
   setSelectedCity: (city) =>
-    set({ selectedCity: city, drillLevel: city ? 'city' : 'city', selectedEvent: null }),
+    set({ selectedCity: city, drillLevel: 'city', selectedEvent: null }),
   setDrillLevel: (level) => set({ drillLevel: level }),
   setSelectedEvent: (event) => set({ selectedEvent: event }),
   setSortType: (sort) => set({ sortType: sort }),
