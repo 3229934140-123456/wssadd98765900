@@ -28,15 +28,19 @@ export function FilterBar() {
   const handleDateChange = (type: 'start' | 'end', value: string) => {
     const newDate = new Date(value);
     if (type === 'start') {
+      newDate.setHours(0, 0, 0, 0);
       setDateRange([newDate, dateRange[1]]);
     } else {
+      newDate.setHours(23, 59, 59, 999);
       setDateRange([dateRange[0], newDate]);
     }
   };
 
   const handleReset = () => {
     const today = new Date();
+    today.setHours(23, 59, 59, 999);
     const thirtyDaysAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+    thirtyDaysAgo.setHours(0, 0, 0, 0);
     setSelectedBrand('brand1');
     setDateRange([thirtyDaysAgo, today]);
   };

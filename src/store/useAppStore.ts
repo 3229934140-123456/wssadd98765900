@@ -85,11 +85,11 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({
       selectedProvince: province,
       selectedCity: null,
-      drillLevel: province ? 'province' : 'province',
+      drillLevel: province ? 'city' : 'province',
       selectedEvent: null,
     }),
   setSelectedCity: (city) =>
-    set({ selectedCity: city, drillLevel: 'city', selectedEvent: null }),
+    set({ selectedCity: city, drillLevel: city ? 'city' : 'city', selectedEvent: null }),
   setDrillLevel: (level) => set({ drillLevel: level }),
   setSelectedEvent: (event) => set({ selectedEvent: event }),
   setSortType: (sort) => set({ sortType: sort }),
